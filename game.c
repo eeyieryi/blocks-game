@@ -175,7 +175,7 @@ int main(void) {
                 DrawFPS(50, 50);
 
                 char c[100];
-                sprintf(c, "%0.2f", seconds);
+                sprintf(c, "%0.4f", seconds);
                 DrawText(c, 50, 20, 20, WHITE);
 
                 if (gameOver) {

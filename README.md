@@ -8,4 +8,4 @@
 
 # Bibliography
 
-- https://en.wikipedia.org/wiki/Tetris
+- <https://en.wikipedia.org/wiki/Tetris>
