@@ -11,17 +11,10 @@
 #define NUM_ROWS 20
 #define NUM_COLUMNS 10
 int board[NUM_ROWS][NUM_COLUMNS];
-#define INITIALIZE_BOARD_WITH 0
 void ResetBoard() {
     for (int i = 0; i < NUM_ROWS; i++)
         for (int j = 0; j < NUM_COLUMNS; j++)
-            board[i][j] = INITIALIZE_BOARD_WITH;
-
-#ifdef DEBUG_MODE
-    for (int i = NUM_ROWS-1; i > NUM_ROWS-5; i--)
-        for (int j = 0; j < NUM_COLUMNS-1; j++)
-            board[i][j] = 1;
-#endif
+            board[i][j] = 0;
 }
 
 #define MAX_ROTATIONS 4
@@ -277,6 +270,9 @@ void ShiftBoard(int board[NUM_ROWS][NUM_COLUMNS]) {
             break;
         }
     }
+    for (int j = 0; j < NUM_COLUMNS; j++) {
+        board[0][j] = 0;
+    }
     ShiftBoard(board);
 }
 
@@ -294,7 +290,7 @@ int main(void) {
     int currentBlockNumber = 0;
     Block *currentBlock = &blocks[currentBlockNumber];
     int currentRotation = 0;
-    int currentCol = 0;
+    int currentCol = (NUM_COLUMNS/2)-(currentBlock->colLength/2);
     int currentRow = 0;
 
     double seconds = 0;
@@ -342,7 +338,7 @@ int main(void) {
                         currentBlockNumber = (currentBlockNumber + 1) % NUM_BLOCKS;
                         currentBlock = &blocks[currentBlockNumber];
                         currentRow = 0;
-                        currentCol = 0;
+                        currentCol = (NUM_COLUMNS/2)-(currentBlock->colLength/2);
                         currentRotation = 0;
                         checkFullRowsSeconds = 0;
                         if (CheckFullRows(board, fullRows)) animatedFullRow = true;
