@@ -16,6 +16,12 @@ void ResetBoard() {
     for (int i = 0; i < NUM_ROWS; i++)
         for (int j = 0; j < NUM_COLUMNS; j++)
             board[i][j] = INITIALIZE_BOARD_WITH;
+
+#ifdef DEBUG_MODE
+    for (int i = NUM_ROWS-1; i > NUM_ROWS-5; i--)
+        for (int j = 0; j < NUM_COLUMNS-1; j++)
+            board[i][j] = 1;
+#endif
 }
 
 #define MAX_ROTATIONS 4
@@ -242,6 +248,38 @@ bool CheckCollisionBlock(int board[NUM_ROWS][NUM_COLUMNS], Block *block, int blo
     return false;
 }
 
+int CheckFullRows(int board[NUM_ROWS][NUM_COLUMNS], int fullRows[NUM_ROWS]) {
+    int fullRowsCount = 0;
+    for (int i = NUM_ROWS-1; i >= 0; i--) {
+        int count = 0;
+        for (int j = 0; j < NUM_COLUMNS; j++) count += board[i][j];
+        if (count == NUM_COLUMNS) {
+            fullRows[i] = 1;
+            fullRowsCount++;
+        } else {
+            fullRows[i] = 0;
+        }
+     }
+    return fullRowsCount;
+}
+
+void ShiftBoard(int board[NUM_ROWS][NUM_COLUMNS]) {
+    int fullRows[NUM_ROWS];
+    int fullRowsCount = CheckFullRows(board, fullRows);
+    if (fullRowsCount == 0) return;
+    for (int i = 0; i < NUM_ROWS; i++) {
+        if (fullRows[i]) {
+            for (int row = i; row > 0; row--) {
+                for (int j = 0; j < NUM_COLUMNS; j++) {
+                    board[row][j] = board[row-1][j];
+                }
+            }
+            break;
+        }
+    }
+    ShiftBoard(board);
+}
+
 
 int main(void) {
     int windowWidth = 640;
@@ -264,6 +302,13 @@ int main(void) {
     bool gameOver = false;
     bool exitWindow = false;
     bool exitWindowRequested = false;
+
+    int animatedFullRow = false;
+    double checkFullRowsSeconds = 0;
+
+    int fullRows[NUM_ROWS];
+    for (int i = 0; i < NUM_ROWS; i++) fullRows[i] = 0;
+
     while (!exitWindow) {
         {
             if (WindowShouldClose()) exitWindowRequested = true;
@@ -278,6 +323,16 @@ int main(void) {
         if (!gameOver) {
             {
                 double dt = GetFrameTime();
+
+                checkFullRowsSeconds += dt;
+                if (checkFullRowsSeconds >= 0.65) {
+                    if (animatedFullRow) {
+                        ShiftBoard(board);
+                        animatedFullRow = false;
+                        CheckFullRows(board, fullRows);
+                    }
+                }
+
                 seconds += dt;
                 if (seconds >= (1) || (IsKeyPressedRepeat(KEY_DOWN) || IsKeyPressed(KEY_DOWN))) {
                     if (seconds >= 1) seconds = 0;
@@ -289,6 +344,8 @@ int main(void) {
                         currentRow = 0;
                         currentCol = 0;
                         currentRotation = 0;
+                        checkFullRowsSeconds = 0;
+                        if (CheckFullRows(board, fullRows)) animatedFullRow = true;
                     } else {
                         currentRow += 1;
                     }
@@ -394,7 +451,13 @@ int main(void) {
                 offsetY = tileWidth*1.5+1;
                 for (int i = 0; i < NUM_ROWS; i++) {
                     for (int j = 0; j < NUM_COLUMNS; j++) {
-                        if (board[i][j] == 1) DrawRectangle(offsetX, offsetY, tileWidth, tileWidth, WHITE);
+                        if (board[i][j] == 1) {
+                            if (fullRows[i]) {
+                                DrawRectangle(offsetX, offsetY, tileWidth, tileWidth, YELLOW);
+                            } else {
+                                DrawRectangle(offsetX, offsetY, tileWidth, tileWidth, WHITE);
+                            }
+                        }
                         offsetX += tileWidth + 1;
                     }
                     offsetX = startOffsetX;
