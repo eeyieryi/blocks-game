@@ -239,6 +239,13 @@ bool CheckCollisionBlock(int board[NUM_ROWS][NUM_COLUMNS], Block *block, int blo
             cellCount++;
         }
     }
+    int numRowsOff = (row+block->rowLength-NUM_ROWS);
+    if (numRowsOff > 0) {
+        int cellIndex = block->cellLength;
+        int iterations = numRowsOff*block->rowLength;
+        while (iterations--)
+            if (block->rotations[blockRotation][cellIndex--]) return true;
+    }
     return false;
 }
 
