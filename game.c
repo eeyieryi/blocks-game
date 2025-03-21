@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "raylib.h"
 
@@ -286,8 +287,10 @@ int main(void) {
 
     InitWindow(windowWidth, windowHeight, windowTitle);
     SetTargetFPS(120);
+    SetRandomSeed(time(NULL));
 
-    int currentBlockNumber = 0;
+
+    int currentBlockNumber = GetRandomValue(0, (NUM_BLOCKS-1)*2) % NUM_BLOCKS;
     Block *currentBlock = &blocks[currentBlockNumber];
     int currentRotation = 0;
     int currentCol = (NUM_COLUMNS/2)-(currentBlock->colLength/2);
@@ -335,7 +338,7 @@ int main(void) {
 
                     if (CheckCollisionBlock(board, currentBlock, currentRotation, currentRow+1, currentCol)) {
                         StampBlockToBoard(board, currentBlock, currentRotation, currentRow, currentCol);
-                        currentBlockNumber = (currentBlockNumber + 1) % NUM_BLOCKS;
+                        currentBlockNumber = GetRandomValue(0, (NUM_BLOCKS-1)*2) % NUM_BLOCKS;
                         currentBlock = &blocks[currentBlockNumber];
                         currentRow = 0;
                         currentCol = (NUM_COLUMNS/2)-(currentBlock->colLength/2);
