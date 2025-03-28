@@ -1,0 +1,4 @@
+TODO.txt
+
+- compute n permutations and serve the pieces in that order, avoiding a piece never showing in a
+random environment

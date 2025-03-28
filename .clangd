@@ -1,0 +1,6 @@
+CompileFlags:
+  Add:
+    - -I../../pkgs/raylib/raylib-5.5/src/
+    - -Wall
+    - -Wextra
+    - -std=c99
